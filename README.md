@@ -18,9 +18,10 @@ gcc -o mySegway ./mySegway.c ./motors.c  -lwiringPi -lpthread -lm
 ./mySegway
 
 ## Reference: ##
-http://blog.bitify.co.uk/2013/11/reading-data-from-mpu-6050-on-raspberry.html
-https://projects.drogon.net/raspberry-pi/wiringpi/software-pwm-library/
-http://robotrabbit.blogspot.tw/2012/07/pid.html
+http://blog.bitify.co.uk/2013/11/reading-data-from-mpu-6050-on-raspberry.html  
+https://projects.drogon.net/raspberry-pi/wiringpi/software-pwm-library/  
+http://robotrabbit.blogspot.tw/2012/07/pid.html  
+
 
 
 
