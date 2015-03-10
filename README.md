@@ -7,15 +7,17 @@ This is the control code of the segway
 
 ## Requirements
 1. Raspberry Pi
-2. wiringPi 
+2. MPU6050
+3. L293D
+4. wiringPi 
 
 
 ## Build Instruction 
-gcc -o mySegway ./mySegway.c ./motors.c  -lwiringPi -lpthread -lm
+    $ gcc -o mySegway ./mySegway.c ./motors.c  -lwiringPi -lpthread -lm
 
 
 ## Run 
-./mySegway
+    $ sudo ./mySegway
 
 ## Reference: ##
 http://blog.bitify.co.uk/2013/11/interfacing-raspberry-pi-and-mpu-6050.html  
