@@ -6,9 +6,9 @@
 
 
 // PID parameters
-double Kp = 5.5;
+double Kp = 4.5;
 double Ki = 1.0;
-double Kd = 0.0;
+double Kd = 5.0;
 double K  = 1.9*1.12;
 
 
@@ -101,7 +101,7 @@ double constrain(double v, double min_v, double max_v)
     return (double)v;
 }
 
-double GUARD_GAIN = 10.0;
+double GUARD_GAIN = 40.0;
 double error, last_error, integrated_error;
 double pTerm, iTerm, dTerm;
 double angle;
