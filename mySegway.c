@@ -6,9 +6,9 @@
 
 
 // PID parameters
-double Kp = 2.5;
-double Ki = 1.0;
-double Kd = 8.0;
+double Kp = 2.5;   // 2.5
+double Ki = 0.8;   // 1.0
+double Kd = 8.0;   // 8.0
 double K  = 1.9*1.12;
 
 
@@ -105,7 +105,7 @@ double GUARD_GAIN = 40.0;
 double error, last_error, integrated_error;
 double pTerm, iTerm, dTerm;
 double angle;
-double angle_offset = 1.5;
+double angle_offset = 2.0;  //1.5
 
 double speed;
 
@@ -185,7 +185,7 @@ int main()
     pid();
 //    printf("speed=%lf\n", speed);
 
-    motors();
+    motors(speed, 0.0, 0.0, 0.0);
     
     delay(10);
 //    printf("------------------\n");

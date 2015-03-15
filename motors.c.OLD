@@ -44,8 +44,6 @@ void stop_motors()
 
 }
 
-double left_speed;
-double right_speed;
 
 void motors(double speed, double left_offset, double right_offset)
 {
@@ -58,28 +56,18 @@ void motors(double speed, double left_offset, double right_offset)
 // put M+ high & M- low will come to me
 // put M+ low & M- High will away from me
 
-  left_speed = speed + left_offset;
-  right_speed = speed + right_offset;
 
-  // left motor
-  if (left_speed < 0)  {
-    softPwmWrite(0, -left_speed);
+  if (speed < 0)  {
+    softPwmWrite(0, -speed - left_offset);
     softPwmWrite(2, 0);
-  }
-  else
-  if (left_speed > 0)  {
-    softPwmWrite(2, left_speed);
-    softPwmWrite(0, 0);
-  }
-
-  // right motor
-  if (right_speed < 0)  {
-    softPwmWrite(5, -right_speed);
+    softPwmWrite(5, -speed + );
     softPwmWrite(4, 0);
   }
   else
-  if (right_speed > 0)  {
-    softPwmWrite(4, right_speed);
+  if (speed > 0)  {
+    softPwmWrite(2, speed);
+    softPwmWrite(0, 0);
+    softPwmWrite(4, speed);
     softPwmWrite(5, 0);
   }
 }

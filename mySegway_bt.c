@@ -10,7 +10,7 @@
 
 
 // PID parameters
-double Kp = 2.5;
+double Kp = 3.0;
 double Ki = 1.0;
 double Kd = 8.0;
 double K  = 1.9*1.12;
@@ -109,14 +109,16 @@ double GUARD_GAIN = 40.0;
 double error, last_error, integrated_error;
 double pTerm, iTerm, dTerm;
 double angle;
-double angle_offset = 1.5;
+double angle_offset = 2.0;
 
 double speed;
-
+double left_offset = 0.0;
+double right_offset = 0.0;
+double forward_offset = 0.0;
 
 void pid()
 {
-  error = last_y - angle_offset;
+  error = last_y - angle_offset - forward_offset;
 
   pTerm = Kp * error;
 
@@ -177,13 +179,40 @@ int check_for_cmd()
        printf("MATCHED STOP\n");
        return CMD_STOP;
     }
-    if (strncmp(buf, "FORWARD", 7) == 0) {
-       printf("MATCHED FORWARD\n");
-       return CMD_FORWARD;
+
+    if (strncmp(buf, "LEFT_TOUCHDOWN", 14) == 0) {
+       right_offset = 10.0;
+       left_offset = -10.0;
     }
-    if (strncmp(buf, "BACKWARD", 8) == 0) {
-       printf("MATCHED BACKWARD\n");
-       return CMD_BACKWARD;
+    if (strncmp(buf, "LEFT_TOUCHUP", 12) == 0) {
+       right_offset = 0.0;
+       left_offset = 0.0;
+    }
+
+    if (strncmp(buf, "RIGHT_TOUCHDOWN", 15) == 0) {
+       right_offset = -10.0;
+       left_offset = 10.0;
+    }
+    if (strncmp(buf, "RIGHT_TOUCHUP", 13) == 0) {
+       right_offset = 0.0;
+       left_offset = 0.0;
+    }
+
+    if (strncmp(buf, "FORWARD_TOUCHDOWN", 17) == 0) {
+       printf("MATCHED FORWARD_TOUCHDOWN\n");
+       forward_offset = 2.5;
+    }
+    if (strncmp(buf, "FORWARD_TOUCHUP", 15) == 0) {
+       printf("MATCHED FORWARD_TOUCHUP\n");
+       forward_offset = 0.0;
+    }
+    if (strncmp(buf, "BACKWARD_TOUCHDOWN", 18) == 0) {
+       printf("MATCHED BACKWARD_TOUCHDOWN\n");
+       forward_offset = -2.5;
+    }
+    if (strncmp(buf, "BACKWARD_TOUCHUP", 16) == 0) {
+       printf("MATCHED BACKWARD_TOUCHUP\n");
+       forward_offset = 0.0;
     }
 
 
@@ -198,7 +227,7 @@ int main()
 init_point:
 
   init_motors();
-  delay(200);
+  delay(20);
 
   // wait for START
   wait_for_start();
@@ -259,7 +288,7 @@ init_point:
     pid();
 //    printf("speed=%lf\n", speed);
 
-    motors();
+    motors(speed, left_offset, right_offset);
 
     if (check_for_cmd() == CMD_STOP) {
       printf("WE SHOULD STOP NOW\n");
