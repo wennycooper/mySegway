@@ -40,7 +40,7 @@ void stop_motors()
 
   printf("motor stopped!!\n");
 
-  exit(1);
+  // exit(1);
 
 }
 

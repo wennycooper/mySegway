@@ -1,8 +1,12 @@
 #include  <wiringPiI2C.h>
+#include  <sys/types.h>
+#include  <sys/stat.h>
+#include  <fcntl.h>
 #include  <stdio.h>
 #include  <stdlib.h>
 #include  <math.h>
 #include  <sys/time.h>
+#include  <string.h>
 
 
 // PID parameters
@@ -126,10 +130,78 @@ void pid()
   
 }
 
+int fd_bt;
+char buf[1024];
+char BT_DEV[] = "/dev/ttyAMA0";
+
+void init_bt()
+{
+  if ((fd_bt = open(BT_DEV, O_RDWR | O_NONBLOCK)) == -1)
+  {
+    printf("NonBlocking device %s open failed!! \n", BT_DEV);
+    exit(EXIT_FAILURE);
+  }
+  else
+  {
+    printf("NonBlocking device %s open OK!! \n", BT_DEV);
+  }
+}
+
+#define CMD_START 1
+#define CMD_STOP  2
+#define CMD_FORWARD  3
+#define CMD_BACKWARD 4
+
+int wait_for_start()
+{
+  while(1) {
+    if (read(fd_bt, buf, 1024) != -1)
+    {
+      printf("%s(%d)\n", buf, strlen(buf));
+      if (strncmp(buf, "START", 5) == 0) {
+        printf("MATCHED START\n");
+        return 1;
+      }
+    }
+  }
+}
+
+int check_for_cmd()
+{
+  if (read(fd_bt, buf, 1024) != -1)
+  {
+    printf("%s(%d)\n", buf, strlen(buf));
+//    if (strncmp(buf, "START", 5) == 0)
+//       printf("MATCHED START\n");
+    if (strncmp(buf, "STOP", 4) == 0) {
+       printf("MATCHED STOP\n");
+       return CMD_STOP;
+    }
+    if (strncmp(buf, "FORWARD", 7) == 0) {
+       printf("MATCHED FORWARD\n");
+       return CMD_FORWARD;
+    }
+    if (strncmp(buf, "BACKWARD", 8) == 0) {
+       printf("MATCHED BACKWARD\n");
+       return CMD_BACKWARD;
+    }
+
+
+  }
+  return 0;
+}
+
 int main()
 {
+  init_bt();
+
+init_point:
+
   init_motors();
   delay(200);
+
+  // wait for START
+  wait_for_start();
 
   fd = wiringPiI2CSetup (0x68);
   wiringPiI2CWriteReg8 (fd,0x6B,0x00);//disable sleep mode 
@@ -179,16 +251,24 @@ int main()
 
 //    printf("[AFTER] gyro_scaled_y=%f, deltaT=%lf, rotation_y=%f, last_y=%f\n", (double)gyro_scaled_y, (double)deltaT, (double)rotation_y, (double) last_y);
     
-    if (last_y < -60.0 || last_y > 60.0) 
+    if (last_y < -45.0 || last_y > 45.0) {
       stop_motors();
+      exit(1);
+    }
 
     pid();
 //    printf("speed=%lf\n", speed);
 
     motors();
-    
+
+    if (check_for_cmd() == CMD_STOP) {
+      printf("WE SHOULD STOP NOW\n");
+      stop_motors();
+      //break;
+      goto init_point;
+    }
+
     delay(10);
-//    printf("------------------\n");
   }
 
   stop_motors();
