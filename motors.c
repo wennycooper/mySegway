@@ -38,7 +38,7 @@ void stop_motors()
   digitalWrite(5, LOW);
   digitalWrite(4, LOW);
 
-  printf("motor stopped!!\n");
+//  printf("motor stopped!!\n");
 
   // exit(1);
 

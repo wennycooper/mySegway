@@ -10,10 +10,11 @@
 
 
 // PID parameters
-double Kp = 3.0;
-double Ki = 1.0;
-double Kd = 8.0;
-double K  = 1.9*1.12;
+double Kp = 8.0;
+double Ki = 1.5;
+double Kd = 10.0;
+double K  = 1.0;
+//double K  = 1.9*1.12;
 
 
 // Complimentary Filter parameters
@@ -122,8 +123,9 @@ void pid()
 
   pTerm = Kp * error;
 
-  integrated_error += error;
-  iTerm = Ki * constrain(integrated_error, -GUARD_GAIN, GUARD_GAIN);
+  integrated_error = 0.9*integrated_error + error;
+  iTerm = Ki * integrated_error;
+  //iTerm = Ki * constrain(integrated_error, -GUARD_GAIN, GUARD_GAIN);
 
   dTerm = Kd * (error - last_error);
   last_error = error;
@@ -140,12 +142,12 @@ void init_bt()
 {
   if ((fd_bt = open(BT_DEV, O_RDWR | O_NONBLOCK)) == -1)
   {
-    printf("NonBlocking device %s open failed!! \n", BT_DEV);
+    //printf("NonBlocking device %s open failed!! \n", BT_DEV);
     exit(EXIT_FAILURE);
   }
   else
   {
-    printf("NonBlocking device %s open OK!! \n", BT_DEV);
+    //printf("NonBlocking device %s open OK!! \n", BT_DEV);
   }
 }
 
@@ -159,9 +161,9 @@ int wait_for_start()
   while(1) {
     if (read(fd_bt, buf, 1024) != -1)
     {
-      printf("%s(%d)\n", buf, strlen(buf));
+      //printf("%s(%d)\n", buf, strlen(buf));
       if (strncmp(buf, "START", 5) == 0) {
-        printf("MATCHED START\n");
+        //printf("MATCHED START\n");
         return 1;
       }
     }
@@ -172,11 +174,11 @@ int check_for_cmd()
 {
   if (read(fd_bt, buf, 1024) != -1)
   {
-    printf("%s(%d)\n", buf, strlen(buf));
+//    printf("%s(%d)\n", buf, strlen(buf));
 //    if (strncmp(buf, "START", 5) == 0)
 //       printf("MATCHED START\n");
     if (strncmp(buf, "STOP", 4) == 0) {
-       printf("MATCHED STOP\n");
+//       printf("MATCHED STOP\n");
        return CMD_STOP;
     }
 
@@ -199,19 +201,19 @@ int check_for_cmd()
     }
 
     if (strncmp(buf, "FORWARD_TOUCHDOWN", 17) == 0) {
-       printf("MATCHED FORWARD_TOUCHDOWN\n");
+//       printf("MATCHED FORWARD_TOUCHDOWN\n");
        forward_offset = 2.5;
     }
     if (strncmp(buf, "FORWARD_TOUCHUP", 15) == 0) {
-       printf("MATCHED FORWARD_TOUCHUP\n");
+//       printf("MATCHED FORWARD_TOUCHUP\n");
        forward_offset = 0.0;
     }
     if (strncmp(buf, "BACKWARD_TOUCHDOWN", 18) == 0) {
-       printf("MATCHED BACKWARD_TOUCHDOWN\n");
+//       printf("MATCHED BACKWARD_TOUCHDOWN\n");
        forward_offset = -2.5;
     }
     if (strncmp(buf, "BACKWARD_TOUCHUP", 16) == 0) {
-       printf("MATCHED BACKWARD_TOUCHUP\n");
+//       printf("MATCHED BACKWARD_TOUCHUP\n");
        forward_offset = 0.0;
     }
 
@@ -286,12 +288,12 @@ init_point:
     }
 
     pid();
-//    printf("speed=%lf\n", speed);
+    printf("%lf\t%lf\t%lf\t%lf\t%lf\n", error, speed, pTerm, iTerm, dTerm);
 
     motors(speed, left_offset, right_offset);
 
     if (check_for_cmd() == CMD_STOP) {
-      printf("WE SHOULD STOP NOW\n");
+//      printf("WE SHOULD STOP NOW\n");
       stop_motors();
       //break;
       goto init_point;
