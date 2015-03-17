@@ -101,7 +101,7 @@ double constrain(double v, double min_v, double max_v)
     return (double)v;
 }
 
-double GUARD_GAIN = 40.0;
+double GUARD_GAIN = 100.0;
 double error, last_error, integrated_error;
 double pTerm, iTerm, dTerm;
 double angle;
@@ -116,13 +116,13 @@ void pid()
 
   pTerm = Kp * error;
 
-  integrated_error += error;
-  iTerm = Ki * constrain(integrated_error, -GUARD_GAIN, GUARD_GAIN);
-
+  integrated_error = 0.95*integrated_error + error;
+  iTerm = Ki * integrated_error;
+  
   dTerm = Kd * (error - last_error);
   last_error = error;
 
-  speed = constrain(K*(pTerm + iTerm + dTerm), -100.0, +100.0); 
+  speed = constrain(K*(pTerm + iTerm + dTerm), -GUARD_GAIN, GUARD_GAIN); 
   
 }
 
@@ -183,12 +183,11 @@ int main()
       stop_motors();
 
     pid();
-//    printf("speed=%lf\n", speed);
+    printf("%lf\t%lf\t%lf\t%lf\t%lf\n", error, speed, pTerm, iTerm, dTerm);
 
-    motors(speed, 0.0, 0.0, 0.0);
+    motors(speed, 0.0, 0.0);
     
     delay(10);
-//    printf("------------------\n");
   }
 
   stop_motors();

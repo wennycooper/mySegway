@@ -10,9 +10,9 @@
 
 
 // PID parameters
-double Kp = 8.0;
-double Ki = 1.5;
-double Kd = 10.0;
+double Kp = 8.0; //8.0
+double Ki = 2.5; //3.0
+double Kd = 10.0; //10.0
 double K  = 1.0;
 //double K  = 1.9*1.12;
 
@@ -123,7 +123,7 @@ void pid()
 
   pTerm = Kp * error;
 
-  integrated_error = 0.9*integrated_error + error;
+  integrated_error = 0.95*integrated_error + error;
   iTerm = Ki * integrated_error;
   //iTerm = Ki * constrain(integrated_error, -GUARD_GAIN, GUARD_GAIN);
 

@@ -5,7 +5,6 @@
 
 #define RANGE	100
 #define INITIAL_VALUE 0
-#define MIN_POWER  25
 
 void init_motors()
 {
