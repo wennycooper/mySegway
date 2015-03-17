@@ -62,23 +62,23 @@ void motors(double speed, double left_offset, double right_offset)
 
   // left motor
   if (left_speed < 0)  {
-    softPwmWrite(0, -left_speed);
+    softPwmWrite(0, (int) -left_speed);
     softPwmWrite(2, 0);
   }
   else
   if (left_speed > 0)  {
-    softPwmWrite(2, left_speed);
+    softPwmWrite(2, (int) left_speed);
     softPwmWrite(0, 0);
   }
 
   // right motor
   if (right_speed < 0)  {
-    softPwmWrite(5, -right_speed);
+    softPwmWrite(5, (int) -right_speed);
     softPwmWrite(4, 0);
   }
   else
   if (right_speed > 0)  {
-    softPwmWrite(4, right_speed);
+    softPwmWrite(4, (int) right_speed);
     softPwmWrite(5, 0);
   }
 }
