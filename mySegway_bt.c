@@ -11,8 +11,8 @@
 
 // PID parameters
 double Kp = 8.0; //8.0
-double Ki = 2.5; //3.0
-double Kd = 10.0; //10.0
+double Ki = 2.5/4.0; //3.0
+double Kd = 10.0*4.0; //10.0
 double K  = 1.0;
 //double K  = 1.9*1.12;
 
@@ -106,7 +106,6 @@ double constrain(double v, double min_v, double max_v)
     return (double)v;
 }
 
-double GUARD_GAIN = 40.0;
 double error, last_error, integrated_error;
 double pTerm, iTerm, dTerm;
 double angle;
@@ -119,11 +118,11 @@ double forward_offset = 0.0;
 
 void pid()
 {
-  error = last_y - angle_offset - forward_offset;
+  error = last_y + angle_offset - forward_offset;
 
   pTerm = Kp * error;
 
-  integrated_error = 0.95*integrated_error + error;
+  integrated_error = 0.98*integrated_error + error;
   iTerm = Ki * integrated_error;
   //iTerm = Ki * constrain(integrated_error, -GUARD_GAIN, GUARD_GAIN);
 
@@ -229,7 +228,10 @@ int main()
 init_point:
 
   init_motors();
-  delay(20);
+  delay(5);
+  integrated_error = 0.0;
+  last_error = 0.0;
+  
 
   // wait for START
   wait_for_start();
@@ -284,7 +286,7 @@ init_point:
     
     if (last_y < -45.0 || last_y > 45.0) {
       stop_motors();
-      exit(1);
+      break;
     }
 
     pid();
@@ -299,9 +301,11 @@ init_point:
       goto init_point;
     }
 
-    delay(10);
+    //delay(10);
   }
 
   stop_motors();
-  return 0;
+  goto init_point;
+
+  //return 0;
 }
