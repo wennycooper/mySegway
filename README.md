@@ -1,9 +1,12 @@
-# mySegway #
+# mySegway
 This is the control code of the segway 
 
 1. access mpu6050 to get gyro and acceleration information
 2. compute y-axis error with complimentary filter
 3. update dc motor speed with PID control
+
+## Demo
+https://www.youtube.com/watch?v=QyjIQknHPFw
 
 ## Requirements
 1. Raspberry Pi
