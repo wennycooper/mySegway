@@ -10,9 +10,9 @@
 
 
 // PID parameters
-double Kp = 8.0; //8.0
-double Ki = 2.5/4.0; //3.0
-double Kd = 10.0*4.0; //10.0
+double Kp = 4.0; //8.0
+double Ki = 1.2/4.0; //3.0
+double Kd = 15.0*2.0; //10.0
 double K  = 1.0;
 //double K  = 1.9*1.12;
 
@@ -109,7 +109,7 @@ double constrain(double v, double min_v, double max_v)
 double error, last_error, integrated_error;
 double pTerm, iTerm, dTerm;
 double angle;
-double angle_offset = 2.0;
+double angle_offset = 0.0;
 
 double speed;
 double left_offset = 0.0;
@@ -201,7 +201,7 @@ int check_for_cmd()
 
     if (strncmp(buf, "FORWARD_TOUCHDOWN", 17) == 0) {
 //       printf("MATCHED FORWARD_TOUCHDOWN\n");
-       forward_offset = 2.5;
+       forward_offset = 5.0;
     }
     if (strncmp(buf, "FORWARD_TOUCHUP", 15) == 0) {
 //       printf("MATCHED FORWARD_TOUCHUP\n");
@@ -209,7 +209,7 @@ int check_for_cmd()
     }
     if (strncmp(buf, "BACKWARD_TOUCHDOWN", 18) == 0) {
 //       printf("MATCHED BACKWARD_TOUCHDOWN\n");
-       forward_offset = -2.5;
+       forward_offset = -5.0;
     }
     if (strncmp(buf, "BACKWARD_TOUCHUP", 16) == 0) {
 //       printf("MATCHED BACKWARD_TOUCHUP\n");
