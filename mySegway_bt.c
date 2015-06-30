@@ -290,7 +290,7 @@ init_point:
     }
 
     pid();
-    printf("%lf\t%lf\t%lf\t%lf\t%lf\n", error, speed, pTerm, iTerm, dTerm);
+    //printf("%lf\t%lf\t%lf\t%lf\t%lf\n", error, speed, pTerm, iTerm, dTerm);
 
     motors(speed, left_offset, right_offset);
 
