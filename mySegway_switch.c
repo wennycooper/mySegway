@@ -1,4 +1,6 @@
 #include  <wiringPiI2C.h>
+#include  <wiringPi.h>
+
 #include  <sys/types.h>
 #include  <sys/stat.h>
 #include  <fcntl.h>
@@ -7,6 +9,7 @@
 #include  <math.h>
 #include  <sys/time.h>
 #include  <string.h>
+#include  <signal.h>
 
 
 // PID parameters
@@ -133,42 +136,14 @@ void pid()
   
 }
 
-int fd_bt;
 char buf[1024];
-char BT_DEV[] = "/dev/ttyAMA0";
-
-void init_bt()
-{
-  if ((fd_bt = open(BT_DEV, O_RDWR | O_NONBLOCK)) == -1)
-  {
-    //printf("NonBlocking device %s open failed!! \n", BT_DEV);
-    exit(EXIT_FAILURE);
-  }
-  else
-  {
-    //printf("NonBlocking device %s open OK!! \n", BT_DEV);
-  }
-}
 
 #define CMD_START 1
 #define CMD_STOP  2
 #define CMD_FORWARD  3
 #define CMD_BACKWARD 4
 
-int wait_for_start()
-{
-  while(1) {
-    if (read(fd_bt, buf, 1024) != -1)
-    {
-      //printf("%s(%d)\n", buf, strlen(buf));
-      if (strncmp(buf, "START", 5) == 0) {
-        //printf("MATCHED START\n");
-        return 1;
-      }
-    }
-  }
-}
-
+/*
 int check_for_cmd()
 {
   if (read(fd_bt, buf, 1024) != -1)
@@ -215,15 +190,27 @@ int check_for_cmd()
 //       printf("MATCHED BACKWARD_TOUCHUP\n");
        forward_offset = 0.0;
     }
-
-
   }
   return 0;
+}
+*/
+
+void mysigint()
+{
+    printf("Graceful stop motors!\n");
+    stop_motors();
+    
+    exit(0);
 }
 
 int main()
 {
-  init_bt();
+  wiringPiSetup();
+
+  if (signal(SIGINT, mysigint) == SIG_ERR) {
+    printf("Failed to register SIGINT!\n");
+    exit(1);
+  }
 
 init_point:
 
@@ -233,8 +220,16 @@ init_point:
   last_error = 0.0;
   
 
-  // wait for START
-  wait_for_start();
+  // wait for START (pin1 High to Low)
+  while(1) {
+    if (digitalRead(1) == 1) break;
+    delay(50);
+  }
+
+  while(1) {
+    if (digitalRead(1) == 0) break;
+    delay(50);
+  }
 
   fd = wiringPiI2CSetup (0x68);
   wiringPiI2CWriteReg8 (fd,0x6B,0x00);//disable sleep mode 
@@ -294,14 +289,12 @@ init_point:
 
     motors(speed, left_offset, right_offset);
 
-    if (check_for_cmd() == CMD_STOP) {
-//      printf("WE SHOULD STOP NOW\n");
+    if (digitalRead(1) == 1) {
+      printf("WE SHOULD STOP NOW\n");
       stop_motors();
-      //break;
-      goto init_point;
+      break;
     }
 
-    //delay(10);
   }
 
   stop_motors();
