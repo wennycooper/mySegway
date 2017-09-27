@@ -28,7 +28,7 @@ http://blog.bitify.co.uk/2013/11/reading-data-from-mpu-6050-on-raspberry.html
 https://projects.drogon.net/raspberry-pi/wiringpi/software-pwm-library/  
 http://robotrabbit.blogspot.tw/2012/07/pid.html  
 http://www.bajdi.com/building-a-self-balancing-bot/  
-
+https://docs.google.com/presentation/d/1sfy-g9Abkmnrfon5V3urBC8NwrbvRSWGLPa-99JfPEs/edit?usp=sharing
 
 
 
